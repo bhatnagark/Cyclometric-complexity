@@ -11,7 +11,7 @@ from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import json, requests, time, getpass
 
-class repository:
+class repository(Resource):
     def __init__(self):
         #global server object
         global chiefS
@@ -43,6 +43,50 @@ class repository:
  api.add_resource(repository, "/repo", endpoint="repo") 
 
   
+class cyclomatic(Resource):
+    def __init__(self):
+        global chiefs
+        self.server=chiefs
+        super(cyclomatic, self).__init__()
+        self.reqparser = reqparse.RequestParser()
+        
+        self.reqparser.add_argument('sha of commit', type=str, location = 'json')  # Repeat for multiple variables
+        self.reqparser.add_argument('complexity', type=float, location='json')
+    
+    def get(self):
+        if self.server.currentsecondary < self.server.secondary:
+            time.sleep(0.1)
+            return {'sha': -2}
+        if len(self.server.commitlist) == 0:  # No more commits to give
+            return {'sha': -1}
+        
+        commitvalue=self.server.commitlist[0]
+        del self.server.commitlist[0]
+        print("sent:{}".format.commitvalue)
+        return {'sha':commitvalue}
+    
+    def post(self):
+        args=self..reqparse.parse_args()
+        print("Received sha {}".format(args['sha of commit']))
+        print("Received complexity {}".format(args['complexity']))
+        self.server.listofccs.append({'sha':args['commitSha'], 'complexity':args['complexity']})
+        print(self.server.listofccs)
+        print(self.server.commitlist)
+        if len(self.server.listofccs) == self.server.totalcommits:
+            endTime = time.time() - self.server.startTime
+            print("finished in {} seconds".format(endTime))
+            print(len(self.server.listofccs))
+            totalAverageCC = 0
+            for x in self.server.listofccs:
+                if x['complexity'] > 0:
+                    totalAverageCC += x['complexity']
+                else:
+                    print("Commit {} has no computable files".format(x['sha']))
+            totalAverageCC = totalAverageCC / len(self.server.listofccs)
+            print("OVERALL CYCLOMATIC COMPLEXITY FOR REPOSITORY: {}".format(totalAverageCC))
+        return {'success':True}
+
+        
 class chiefServer():
     def __init__(self):
         self.secondary=input("Enter the total number of secondary nodes: ")
@@ -72,7 +116,7 @@ class chiefServer():
                 currentpage+=1 
         self.totalcommits=len(self.commitlist)
         self.listofccs=[]
-        print("Number of commits: {}".format(self.totalNumberOfCommits))        
+        print("Number of commits: {}".format(self.totalcommits))        
                 
                                 
             
